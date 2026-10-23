@@ -1,0 +1,36 @@
+name: Bug report
+description: Report a reproducible problem in ForgeCheck
+title: "bug: "
+body:
+  - type: markdown
+    attributes:
+      value: "Do not post vulnerabilities or credentials in public issues; see SECURITY.md."
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: "commit SHA, or not released"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Non-sensitive reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Observed result
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Relevant versions and redacted logs

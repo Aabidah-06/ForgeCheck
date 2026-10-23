@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security policy
+    url: https://github.com/SoraForge/ForgeCheck/blob/main/SECURITY.md
+    about: Don't disclose sensitive vulnerabilities in public issues.

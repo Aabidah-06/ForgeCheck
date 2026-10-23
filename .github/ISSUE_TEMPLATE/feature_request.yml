@@ -1,0 +1,26 @@
+name: Feature request
+description: Explain a real developer problem
+title: "feat: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Developer use case and problem
+    validations:
+      required: true
+  - type: textarea
+    id: competition
+    attributes:
+      label: Existing alternatives and their limitations
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Proposed behavior and acceptance criteria
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence, documentation, or reproduction
