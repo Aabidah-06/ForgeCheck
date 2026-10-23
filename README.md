@@ -2,41 +2,54 @@
 
 **Stellar application compatibility tooling — under development.**
 
-ForgeCheck is an independent open-source project of [SoraForge](https://github.com/SoraForge). Its goal is to identify evidence-backed SDK, RPC, and protocol compatibility risks in applications built on Stellar.
+ForgeCheck is an independent open-source project by [SoraForge](https://github.com/SoraForge). Its goal is to identify evidence-backed SDK, RPC and protocol compatibility risks in applications built on Stellar.
 
-> **Status (October 2026): foundation only.** There is currently **no working ForgeCheck CLI, scanner or production release**. The repository contains governance, technical specifications and checks for the repository itself.
+> **Current status:** The Node.js 22+ TypeScript CLI is runnable, but **compatibility scanning is not implemented**. Running `scan` on an existing directory exits with status 3 and does not claim that the project was checked. Source discovery and rules are tracked in [issues #6–#12](https://github.com/SoraForge/ForgeCheck/issues).
 
-## Planned capabilities
+## Getting started
 
-- A TypeScript-first CLI for inspecting application dependencies and integration assumptions.
-- A version-aware rule library sourced from Stellar's documented protocol and SDK changes.
-- Review findings that distinguish confirmed failures from suspicious patterns and untested scenarios.
-- Reproducible fixtures, CI reporting, and later explicitly opt-in isolated integration tests.
-
-**Non-goals:** another generic static-analysis engine, custody of assets, automatically running application code, or claims of formal security certification.
-
-## Development setup (foundation only)
-
-Node.js 22+ is required. No external npm packages are needed to run foundation checks:
+Prerequisites: Node.js **22 or later**, npm.
 
 ```sh
-npm run check:repo
+git clone https://github.com/SoraForge/ForgeCheck.git
+cd ForgeCheck
+npm ci
+npm run build
+node dist/cli.js --help
+node dist/cli.js --version
+node dist/cli.js scan .
 npm test
+npm run check:repo
 ```
 
-These validate **repository documentation and templates**, not Stellar applications. Installation instructions for the actual product will be added when the CLI exists.
+The built CLI is available at `dist/cli.js`; the package also declares a `forgecheck` binary for future packaging. It is **not published** to npm. Run it locally with `node dist/cli.js` (do not use `npx` to download unrelated packages).
+
+**Supported commands now:**
+
+- `forgecheck --help` (also `-h` or `help`) — CLI usage.
+- `forgecheck --version` (also `-V` or `version`) — package version.
+- `forgecheck scan <directory>` — validates that a local directory exists, then prints a clear *analysis unavailable* message. It **does not analyze compatibility yet**.
+- `forgecheck scan --help` — scan-specific help.
+
+**Exit codes:** `0` help/version or a completed scan (when a real scanner is wired in), `1` internal failure, `2` invalid command/path, `3` analysis unavailable. The default CLI currently cannot successfully complete a scan.
+
+The CLI makes no network requests and executes no scripts from the target project. It does not need Stellar keys or credentials.
+
+## Contributing to the engine
+
+The typed interfaces in [src/contracts.ts](src/contracts.ts) define `ScanEngine`, `ScanRequest`, `ScanResult`, `ScanFinding`, and `ScanReporter`. The CLI implementation in [src/application.ts](src/application.ts) accepts injected implementations; integration will be handled in [issue #13](https://github.com/SoraForge/ForgeCheck/issues/13).
 
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)
-- [Compatibility rule quality standard](docs/RULES.md)
+- [Rule proposal standards](docs/RULES.md)
 - [Contributing](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
-- [Security Policy](SECURITY.md)
+- [Security policy](SECURITY.md)
 
 ## Governance and affiliation
 
-SoraForge is independently run and not affiliated with or endorsed by the Stellar Development Foundation. This repository **has not been accepted into Drips Wave**. Participation and contributor rewards, if any, would be subject to program rules and acceptance by organizers.
+ForgeCheck is independent and is not endorsed by the Stellar Development Foundation. The repository **has not been accepted into Drips Wave**; participating in future Waves requires organizer approval.
 
 Licensed under [Apache License 2.0](LICENSE).

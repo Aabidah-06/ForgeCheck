@@ -7,7 +7,10 @@ export const required = [
   "docs/ARCHITECTURE.md", "docs/ROADMAP.md", "docs/RULES.md",
   ".github/PULL_REQUEST_TEMPLATE.md", ".github/ISSUE_TEMPLATE/bug_report.yml",
   ".github/ISSUE_TEMPLATE/feature_request.yml", ".github/ISSUE_TEMPLATE/rule_proposal.yml",
-  ".github/workflows/repository-checks.yml"
+  ".github/workflows/repository-checks.yml",
+  "package.json", "package-lock.json", "tsconfig.json",
+  "src/contracts.ts", "src/application.ts", "src/cli.ts",
+  "tests/cli.test.mjs", "tests/application.test.mjs"
 ];
 
 export function missing(root) {

@@ -1,27 +1,35 @@
 # ForgeCheck Roadmap
 
-Everything listed below is **planned**, not shipped.
+This roadmap distinguishes shipped foundation work from planned capabilities.
 
-## M0 — Foundation
+## M0 — Repository foundation ✅
 
-Governance, documentation, issue/PR templates, GitHub Actions and repository integrity tests.
+Governance and community files, issue templates, repository checks and GitHub Actions.
 
-## M1 — Working local CLI
+## M1 — First usable compatibility CLI (in progress)
 
-Implement dependency and source discovery for Stellar JS/TS integrations, versioned rule metadata, precise finding classifications, evidence-backed checks, positive and negative fixtures, and useful CLI output. Produce first runnable usage instructions.
+- [x] #5 CLI runtime, build system, typed contracts and honest unavailable status.
+- [ ] #6 Source discovery.
+- [ ] #7 SDK dependency/version context.
+- [ ] #8 Compatibility rule registry and finding model integration.
+- [ ] #9 JS SDK support-lifecycle rule.
+- [ ] #10 JS SDK v17 API migration checks.
+- [ ] #11 Protocol 30 W-address review rules.
+- [ ] #12 Horizon/RPC migration review rules.
+- [ ] #13 End-to-end scanner integration and CLI reporting.
 
-## M2 — Real-world validation
+## M2 — Real-project validation
 
-Run against consenting public Stellar apps, compare with existing tools, measure actionable findings and false positives, and gather direct developer feedback.
+Compare the implemented CLI against existing tools, run on consenting public applications, measure false positives and gather independent developer feedback.
 
-## M3 — CI integration
+## M3 — CI integrations
 
-Add deterministic machine-readable output, baseline/suppression policies and a minimal-permission GitHub Actions integration.
+JSON/SARIF output, suppression/baseline handling and minimally privileged GitHub Actions integration.
 
 ## M4 — Optional executable compatibility checks
 
-Offer explicitly authorized, isolated integration tests for selected SDK/RPC/protocol scenarios; no arbitrary code execution by default.
+Only user-opted-in, safely isolated test integrations; ordinary scans must never execute arbitrary project scripts.
 
-## Release and Drips Wave gate
+## Release gate
 
-Do not claim production readiness until core functionality works, tests support claims, docs reflect reality and genuine contributors can participate safely. Drips Wave repository acceptance is determined by program organizers.
+Do not claim production compatibility assessment until functionality, evidence and tests are verified. Drips Wave acceptance is separately determined by program organizers.

@@ -1,32 +1,33 @@
 # Contributing to ForgeCheck
 
-Thanks for helping build useful open-source infrastructure. ForgeCheck is **currently a foundation project**, not a published compatibility scanner.
+We welcome genuine contributions with reproducible requirements and tests. ForgeCheck is currently an *under-development CLI*, not a fully implemented compatibility analyzer.
 
-## Before contributing
+## Proposing work
 
-1. Search existing issues for duplicates.
-2. For new proposals, explain the concrete developer problem and reference real affected Stellar projects or official documentation.
-3. Use a GitHub issue template and specify relevant SDK/API/protocol versions.
-4. Provide a reproducible **redacted** example; never post credentials, production keys or seed phrases.
-5. Obtain maintainer agreement before substantial implementation work.
-
-For new compatibility rules, follow [docs/RULES.md](docs/RULES.md), including cases that *must not* trigger your rule. Avoid speculative or reward-oriented placeholder issues.
+1. Search existing issues and avoid duplicates. The initial [core-functionality backlog](https://github.com/SoraForge/ForgeCheck/issues) begins with issue #5.
+2. Explain the real Stellar developer problem and affected SDK/API/protocol versions.
+3. Include minimal, redacted fixtures; never share real wallet keys, credentials or seed phrases.
+4. For new compatibility rules, follow [docs/RULES.md](docs/RULES.md) and include safe/negative examples.
+5. Discuss overlapping core modules with maintainers **before** implementation.
 
 ## Local development
 
-Requires Node.js 22 or later:
+Requires Node.js 22+, npm. Dependency upgrades are reviewed **manually**; no Dependabot configuration is used.
 
 ```sh
 git clone https://github.com/SoraForge/ForgeCheck.git
 cd ForgeCheck
+npm ci
+npm run build
 npm run check:repo
 npm test
+node dist/cli.js --help
 ```
 
-These checks currently validate only the project foundation. Full integration tests will be added as implementation progresses.
+The CLI's scan command deliberately returns status 3 while the engine is being built. A successful build does not imply compatibility scanning is implemented.
 
 ## Pull requests
 
-Work on a focused branch. Reference the relevant issue, explain the change and tradeoffs, include test fixtures for behavior changes, update documentation and list actual test results. A passing CI run is not a guarantee of acceptance; maintainers review accuracy, security, scope and reproducibility.
+Use a focused branch and PR, reference the issue (`Closes #N`), document actual test runs and limitations, and update fixtures for changed behavior. Check the issue's dependencies before implementation to prevent merge conflicts. Maintainers review code correctness, evidence, reproducibility and security; passing CI does not guarantee acceptance.
 
-Follow [our Code of Conduct](CODE_OF_CONDUCT.md). Report security issues privately using [SECURITY.md](SECURITY.md). Contributions do not imply eligibility for any paid program.
+Follow the [Code of Conduct](CODE_OF_CONDUCT.md). Report vulnerabilities privately under [SECURITY.md](SECURITY.md). Issues and contributions do not imply Drips Wave eligibility or payment.

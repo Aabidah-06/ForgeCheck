@@ -8,11 +8,18 @@ permissions:
 jobs:
   foundation:
     runs-on: ubuntu-latest
-    name: Foundation validation (Node 22)
+    name: Build, test and repository validation (Node 22)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - run: npm run check:repo
-      - run: npm test
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Build TypeScript CLI
+        run: npm run build
+      - name: Check repository documentation
+        run: npm run check:repo
+      - name: Run foundation and product tests
+        run: npm test

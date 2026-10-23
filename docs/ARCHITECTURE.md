@@ -1,31 +1,34 @@
-# Architecture — Proposed Design
+# ForgeCheck Architecture
 
-**This is a specification, not an implemented system.**
+**Status:** CLI transport and interfaces exist; source discovery, rule engine and actual compatibility detection are **not yet implemented**.
 
-ForgeCheck aims to evaluate application integration compatibility for Stellar, not replace general linters, Stellar SDKs, security audits or monitoring platforms.
+## Implemented CLI boundary (issue #5)
+
+`src/contracts.ts` exports `ScanEngine`, `ScanRequest`, `ScanResult`, `ScanFinding`, and `ScanReporter`. `src/application.ts` validates commands and local directory arguments and delegates analysis to an injected `ScanEngine`. The default engine always returns `unavailable` until future components are actually merged.
 
 ```text
-application repository
-      |
-      v
-file / dependency discovery ---> SDK + API + protocol context
-      |                                  |
-      +----------> detection adapters <-+---- version-aware rule registry
-                             |
-                      evidence findings
-                             |
-                    local CLI / CI output
+forgecheck CLI (implemented)
+    |
+    +--> input validation (implemented)
+    |
+    +--> ScanEngine (interface; default unavailable)
+              |
+              +--> discovery (planned #6)
+              +--> dependency context (planned #7)
+              +--> rule registry (planned #8)
+              +--> compatibility rules (planned #9–#12)
+    |
+    +--> ScanReporter (text format; extensible via #13)
 ```
 
-**Planned components:**
+## Proposed integration architecture
 
-1. **Discovery:** Relevant lockfiles, manifests and source files, ignoring secrets and generated output.
-2. **Version context:** SDK, API and protocol assumptions tied to authoritative compatibility references.
-3. **Rules:** Unique IDs, applicability conditions, documented exceptions, upstream citations and tested fixtures.
-4. **Analysis:** Reuse mature parsers and analyzers; report evidence and classify confidence accurately.
-5. **Outputs:** Human-readable summaries and, later, versioned JSON/SARIF formats.
-6. **Opt-in test runner (later):** Reproducible testnet/integration tests in isolated user-controlled environments.
+1. Discover relevant source files, manifests and supported lockfiles without reading secrets.
+2. Determine declared and lockfile-resolved SDK versions, preserving uncertainty.
+3. Execute authoritative, version-aware compatibility checks with positive and negative fixtures.
+4. Produce results classified `confirmed-failure`, `review-required` or `not-evaluated`.
+5. Produce terminal and later structured CI output.
 
-**Safety constraints:** No arbitrary code execution during static scans, no hidden telemetry, no implicit credential collection. A G-only address validator can be perfectly valid for account-creation logic; context matters. See [rule standards](RULES.md) and [roadmap](ROADMAP.md).
+**Security invariants:** Scans are read-only and offline by default; executing project scripts, installing dependencies into the target, collecting keys or uploading source files is forbidden. Purposefully G-only address checks must not be classified as bugs without verifying operation semantics. See [rule policy](RULES.md) and [roadmap](ROADMAP.md).
 
-The first product implementation is expected to use Node.js/TypeScript, subject to initial architecture review.
+The first implementation targets Node.js 22+ with TypeScript ESM compiled using `tsc`. Built files are emitted under `dist/` and ignored by Git.
