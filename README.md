@@ -4,7 +4,7 @@
 
 ForgeCheck is an independent open-source project by [SoraForge](https://github.com/SoraForge). Its goal is to identify evidence-backed SDK, RPC and protocol compatibility risks in applications built on Stellar.
 
-> **Current status:** The Node.js 22+ TypeScript CLI is runnable, but **compatibility scanning is not implemented**. Running `scan` on an existing directory exits with status 3 and does not claim that the project was checked. Source discovery and rules are tracked in [issues #6–#12](https://github.com/SoraForge/ForgeCheck/issues).
+> **Current status:** The Node.js 22+ TypeScript CLI is runnable, but **compatibility scanning is not implemented**. Running `scan` on an existing directory exits with status 3 and does not claim that the project was checked. Standalone discovery (#6) and rule-registry (#8) APIs are implemented, but dependency context, concrete rules, and CLI integration remain pending; see [issues #6–#13](https://github.com/SoraForge/ForgeCheck/issues).
 
 ## Getting started
 
@@ -37,13 +37,14 @@ The CLI makes no network requests and executes no scripts from the target projec
 
 ## Contributing to the engine
 
-The typed interfaces in [src/contracts.ts](src/contracts.ts) define `ScanEngine`, `ScanRequest`, `ScanResult`, `ScanFinding`, and `ScanReporter`. The CLI implementation in [src/application.ts](src/application.ts) accepts injected implementations; integration will be handled in [issue #13](https://github.com/SoraForge/ForgeCheck/issues/13).
+The typed interfaces in [src/contracts.ts](src/contracts.ts) define `ScanEngine`, `ScanRequest`, `ScanResult`, `ScanFinding`, and `ScanReporter`. The CLI implementation in [src/application.ts](src/application.ts) accepts injected implementations; integration will be handled in [issue #13](https://github.com/SoraForge/ForgeCheck/issues/13). Independent APIs are exported as `@soraforge/forgecheck/discovery` and `@soraforge/forgecheck/rules` and are not used by the CLI yet.
 
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)
-- [Rule proposal standards](docs/RULES.md)
+- [Local source discovery](docs/DISCOVERY.md)
+- [Rule registry and proposal standards](docs/RULES.md)
 - [Contributing](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security policy](SECURITY.md)

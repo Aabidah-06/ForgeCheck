@@ -15,6 +15,14 @@
     "./application": {
       "types": "./dist/application.d.ts",
       "default": "./dist/application.js"
+    },
+    "./discovery": {
+      "types": "./dist/discovery.d.ts",
+      "default": "./dist/discovery.js"
+    },
+    "./rules": {
+      "types": "./dist/rules.d.ts",
+      "default": "./dist/rules.js"
     }
   },
   "engines": {
