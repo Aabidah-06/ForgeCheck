@@ -1,0 +1,10 @@
+import { TransactionBuilder as TB, Keypair as KP, xdr, StrKey } from "@stellar/stellar-sdk";
+const tx = TB.fromXDR("AAAA...", "test");
+tx.toXDR();
+const signer = KP.fromSecret("S...");
+const signature = signer.sign(new Uint8Array());
+const hex = signature.toString("hex");
+const keyBytes = StrKey.decodeEd25519PublicKey("G...");
+keyBytes.equals(new Uint8Array());
+const scv = xdr.ScVal.scvU32(42);
+scv.toXDR("hex");

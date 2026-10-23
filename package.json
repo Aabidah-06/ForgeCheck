@@ -26,9 +26,11 @@
     "check:repo": "node scripts/check-repository.mjs",
     "test": "npm run build && node --test tests/*.test.mjs"
   },
-  "devDependencies": {
-    "@types/node": "22.15.29",
+  "dependencies": {
     "typescript": "5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.29"
   },
   "license": "Apache-2.0"
 }
