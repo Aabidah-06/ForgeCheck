@@ -25,7 +25,7 @@ test("empty invocation returns truthful help", () => {
   const r = run();
   assert.equal(r.status, 0);
   assert.match(r.stdout, /forgecheck scan <directory>/);
-  assert.match(r.stdout, /not implemented/i);
+  assert.match(r.stdout, /offline Stellar/i);
   assert.equal(r.stderr, "");
 });
 
@@ -47,10 +47,10 @@ test("version matches package metadata", () => {
   }
 });
 
-test("scan --help documents unavailable analysis", () => {
+test("scan --help documents real limited analysis", () => {
   const r = run("scan", "--help");
   assert.equal(r.status, 0);
-  assert.match(r.stdout, /NOT implemented/);
+  assert.match(r.stdout, /compatibility patterns/);
 });
 
 test("unknown command produces usage failure", () => {
@@ -90,12 +90,15 @@ test("file target produces usage failure", () => {
   assert.match(r.stderr, /not a directory/);
 });
 
-test("existing directory returns unavailable, never success", () => {
-  const r = run("scan", ".");
+test("project without proven Stellar input is not given a clean result", (t) => {
+  const directory = mkdtempSync(join(tmpdir(), "forgecheck-plain-"));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  writeFileSync(join(directory, "plain.ts"), "export const value = 7;\n");
+  const r = run("scan", directory);
   assert.equal(r.status, 3);
   assert.equal(r.stdout, "");
   assert.match(r.stderr, /scan unavailable/);
-  assert.match(r.stderr, /not implemented yet/);
+  assert.match(r.stderr, /No supported Stellar JavaScript SDK integration/);
 });
 
 test("valid temporary directory is never scanned or executed", (t) => {
