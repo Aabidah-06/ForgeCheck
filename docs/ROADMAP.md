@@ -9,14 +9,14 @@ Governance and community files, issue templates, repository checks and GitHub Ac
 ## M1 — First usable compatibility CLI (in progress)
 
 - [x] #5 CLI runtime, build system, typed contracts and honest unavailable status.
-- [ ] #6 Source discovery.
-- [ ] #7 SDK dependency/version context.
-- [ ] #8 Compatibility rule registry and finding model integration.
-- [ ] #9 JS SDK support-lifecycle rule.
-- [ ] #10 JS SDK v17 API migration checks.
-- [ ] #11 Protocol 30 W-address review rules.
-- [ ] #12 Horizon/RPC migration review rules.
-- [ ] #13 End-to-end scanner integration and CLI reporting.
+- [x] #6 Source discovery.
+- [x] #7 SDK dependency/version context.
+- [x] #8 Compatibility rule registry and finding model integration.
+- [x] #9 JS SDK support-lifecycle rule.
+- [x] #10 JS SDK v17 API migration checks.
+- [x] #11 Protocol 30 W-address review rules.
+- [x] #12 Horizon/RPC migration review rules.
+- [x] #13 End-to-end offline scanner integration and CLI reporting (initial subset; audit pending).
 
 ## M2 — Real-project validation
 

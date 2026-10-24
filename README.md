@@ -4,7 +4,7 @@
 
 ForgeCheck is an independent open-source project by [SoraForge](https://github.com/SoraForge). Its goal is to identify evidence-backed SDK, RPC and protocol compatibility risks in applications built on Stellar.
 
-> **Current status:** The Node.js 22+ TypeScript CLI is runnable, but **compatibility scanning is not implemented**. Running `scan` on an existing directory exits with status 3 and does not claim that the project was checked. Standalone discovery (#6) and rule-registry (#8) APIs are implemented, but dependency context, concrete rules, and CLI integration remain pending; see [issues #6–#13](https://github.com/SoraForge/ForgeCheck/issues).
+> **Status:** Initial offline JS/TS compatibility scanning is wired into the CLI, covering selected documented SDK lifecycle, v17 migration, Protocol 30 address, and Horizon-to-RPC review checks. Coverage is intentionally limited; advisory findings do not prove runtime failure. Incomplete scans fail closed.
 
 ## Getting started
 
@@ -17,7 +17,7 @@ npm ci
 npm run build
 node dist/cli.js --help
 node dist/cli.js --version
-node dist/cli.js scan .
+node dist/cli.js scan /path/to/stellar-project --json
 npm test
 npm run check:repo
 ```
@@ -28,16 +28,18 @@ The built CLI is available at `dist/cli.js`; the package also declares a `forgec
 
 - `forgecheck --help` (also `-h` or `help`) — CLI usage.
 - `forgecheck --version` (also `-V` or `version`) — package version.
-- `forgecheck scan <directory>` — validates that a local directory exists, then prints a clear *analysis unavailable* message. It **does not analyze compatibility yet**.
+- `forgecheck scan <directory> [--json]` — inspect discovered JS/TS files, resolve npm lockfile context, and run the initial rules offline. An unsupported/incomplete target is explicitly unavailable, never silently clean.
 - `forgecheck scan --help` — scan-specific help.
 
-**Exit codes:** `0` help/version or a completed scan (when a real scanner is wired in), `1` internal failure, `2` invalid command/path, `3` analysis unavailable. The default CLI currently cannot successfully complete a scan.
+**JSON output:** `--json` returns `status`, `findings`, `filesScanned` and `rulesEvaluated` for completed scans. Findings include rule IDs, confidence, file/line, evidence links and remediation. Reports are redacted as defense-in-depth; do not publish unreviewed reports containing sensitive project metadata.
 
-The CLI makes no network requests and executes no scripts from the target project. It does not need Stellar keys or credentials.
+**Exit codes:** `0` completed scan without confirmed failures (including advisory findings), `1` internal failure, `2` invalid command/path, `3` incomplete or unsupported analysis, `4` confirmed failure. Initial built-in checks are conservative and normally produce review-required rather than confirmed-failure findings.
+
+The CLI makes no network requests and executes no scripts from the target project. It does not need Stellar keys or credentials. By default the scanner has bounded file limits and ignores common build/secret directories. Supported lock context currently focuses on npm; not all imports, networks, dynamic behavior, or protocols can be evaluated. A no-findings result is not a security audit or guarantee.
 
 ## Contributing to the engine
 
-The typed interfaces in [src/contracts.ts](src/contracts.ts) define `ScanEngine`, `ScanRequest`, `ScanResult`, `ScanFinding`, and `ScanReporter`. The CLI implementation in [src/application.ts](src/application.ts) accepts injected implementations; integration will be handled in [issue #13](https://github.com/SoraForge/ForgeCheck/issues/13). Independent APIs are exported as `@soraforge/forgecheck/discovery` and `@soraforge/forgecheck/rules` and are not used by the CLI yet.
+The typed interfaces in [src/contracts.ts](src/contracts.ts) define `ScanEngine`, `ScanRequest`, `ScanResult`, `ScanFinding`, and `ScanReporter`. The CLI implementation in [src/application.ts](src/application.ts) accepts injected implementations; [src/scanner.ts](src/scanner.ts) wires the offline source discovery, SDK context, and rule registry. Source/registry APIs remain available for independently authored rules.
 
 ## Documentation
 
