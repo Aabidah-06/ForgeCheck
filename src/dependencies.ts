@@ -92,7 +92,8 @@ export async function resolveStellarDependencies(discovery:DiscoveryResult):Prom
   for(const [location,info] of Object.entries(packages)){
    if(!obj(info)||!version(info.version))continue;
    const pkg=[...targets].find(x=>location.endsWith("node_modules/"+x));if(!pkg)continue;
-   if(dependencies.some(x=>x.packageName===pkg&&x.resolvedVersion===info.version))continue;
+   if(dependencies.some(x=>x.packageName===pkg && (x.resolvedVersion===info.version ||
+    (x.resolution==="stale-lock" && x.manifest.endsWith("package.json")))))continue;
    dependencies.push({manifest:(dir?dir+"/":"")+"package-lock.json",name:pkg,packageName:pkg,
     declared:"(transitive)",scope:"transitive",resolution:"resolved",resolvedVersion:info.version,location});
   }
