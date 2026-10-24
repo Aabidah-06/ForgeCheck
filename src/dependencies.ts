@@ -82,7 +82,8 @@ export async function resolveStellarDependencies(discovery:DiscoveryResult):Prom
     else if(unsupported.some(x=>posix.dirname(x)===(dir||".")))resolution="unsupported-lock";
     else resolution="missing-lock";
     dependencies.push({manifest,name,packageName,declared:raw,scope,resolution,
-     ...(resolution==="resolved"?{resolvedVersion:versions[0],location:hits[0]?.location}:{})});
+     ...(resolution==="resolved" && versions[0] !== undefined ? {resolvedVersion:versions[0]} : {}),
+     ...(resolution==="resolved" && hits[0] !== undefined ? {location:hits[0].location} : {})});
    }
   }
  }
