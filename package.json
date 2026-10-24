@@ -23,6 +23,14 @@
     "./rules": {
       "types": "./dist/rules.d.ts",
       "default": "./dist/rules.js"
+    },
+    "./dependencies": {
+      "types": "./dist/dependencies.d.ts",
+      "default": "./dist/dependencies.js"
+    },
+    "./sdk-lifecycle": {
+      "types": "./dist/rules/sdk-lifecycle.d.ts",
+      "default": "./dist/rules/sdk-lifecycle.js"
     }
   },
   "engines": {
