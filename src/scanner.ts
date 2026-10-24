@@ -147,13 +147,24 @@ export const projectScanEngine: ScanEngine = {
       bytes += Buffer.byteLength(code, "utf8");
       if (bytes > MAX_TOTAL_BYTES) return { status: "unavailable", reason: "Source size exceeds scan limit." };
       // These checks are advisory when precise SDK version/application context is unknown.
-      if (/(?:from\s*["'](?:@stellar\/stellar-(?:sdk|base)|stellar-sdk|stellar-base)|require\s*\(\s*["'](?:@stellar\/stellar-(?:sdk|base)|stellar-sdk|stellar-base))/.test(code)) {
-        foundImport = true;
-      }
       const syntax = ts.createSourceFile(file, code, ts.ScriptTarget.Latest, true,
         /\.tsx$/i.test(file) ? ts.ScriptKind.TSX :
         /\.jsx$/i.test(file) ? ts.ScriptKind.JSX :
         /\.ts$/i.test(file) ? ts.ScriptKind.TS : ts.ScriptKind.JS);
+      // Recognize actual syntax nodes, not string literals/comments describing imports.
+      function isSdk(value: string): boolean {
+        return /^(?:@stellar\/(?:stellar-sdk|stellar-base)|stellar-sdk|stellar-base)(?:\/.*)?$/.test(value);
+      }
+      function findSdkImport(node: ts.Node): void {
+        if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier) &&
+            isSdk(node.moduleSpecifier.text)) foundImport = true;
+        if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) &&
+            node.expression.text === "require" && node.arguments.length === 1 &&
+            node.arguments[0] && ts.isStringLiteral(node.arguments[0]) &&
+            isSdk(node.arguments[0].text)) foundImport = true;
+        ts.forEachChild(node, findSdkImport);
+      }
+      findSdkImport(syntax);
       const parsed = syntax as ts.SourceFile & { parseDiagnostics?: readonly ts.Diagnostic[] };
       if ((parsed.parseDiagnostics?.length ?? 0) > 0) {
         return { status: "unavailable", reason: "Source syntax could not be completely parsed: " + file };
