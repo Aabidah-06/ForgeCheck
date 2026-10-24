@@ -11,7 +11,7 @@ import { sdkLifecycleRule } from "./rules/sdk-lifecycle.js";
 import { scanSdkV17Source } from "./rules/sdk-v17.js";
 import { scanWAddressSource } from "./rules/w-address.js";
 import { analyzeHorizonSource } from "./rules/horizon.js";
-import type { SourceRuleFinding } from "./rules/source.js";
+import type { SourceRuleFinding, SourceRuleInput } from "./rules/source.js";
 
 const MAX_FILE_BYTES = 1024 * 1024;
 const MAX_TOTAL_BYTES = 32 * 1024 * 1024;
@@ -154,16 +154,20 @@ export const projectScanEngine: ScanEngine = {
         /\.tsx$/i.test(file) ? ts.ScriptKind.TSX :
         /\.jsx$/i.test(file) ? ts.ScriptKind.JSX :
         /\.ts$/i.test(file) ? ts.ScriptKind.TS : ts.ScriptKind.JS);
-      if (syntax.parseDiagnostics.length > 0) {
+      const parsed = syntax as ts.SourceFile & { parseDiagnostics?: readonly ts.Diagnostic[] };
+      if ((parsed.parseDiagnostics?.length ?? 0) > 0) {
         return { status: "unavailable", reason: "Source syntax could not be completely parsed: " + file };
       }
-      const input = { file, source: code, ...(versionFor(file, dependencies.dependencies)
-        ? { resolvedSdkVersion: versionFor(file, dependencies.dependencies) } : {}) };
+      const resolvedSdkVersion = versionFor(file, dependencies.dependencies);
+      const input: SourceRuleInput = { file, source: code,
+        ...(resolvedSdkVersion === undefined ? {} : { resolvedSdkVersion }) };
       sourceFindings.push(...scanSdkV17Source(input));
       sourceFindings.push(...scanWAddressSource(input));
       // Horizon is a standalone AST analyzer with equivalent conservative confidence.
       sourceFindings.push(...analyzeHorizonSource(code, file).map(f => ({
-        ...f, column: 1, evidenceUrl: f.evidence[0] ?? COMPAT_DOC,
+        ruleId: f.ruleId, file: f.file ?? file, line: f.line ?? 1, column: 1,
+        message: f.message, confidence: "review-required" as const,
+        suggestion: f.suggestion, evidenceUrl: f.evidence[0] ?? COMPAT_DOC,
         affectedVersions: "Horizon-to-RPC migration", versionContext: "Migration review only"
       })));
     }
