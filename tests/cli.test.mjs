@@ -90,8 +90,11 @@ test("file target produces usage failure", () => {
   assert.match(r.stderr, /not a directory/);
 });
 
-test("project without proven Stellar input is not given a clean result", () => {
-  const r = run("scan", ".");
+test("project without proven Stellar input is not given a clean result", (t) => {
+  const directory = mkdtempSync(join(tmpdir(), "forgecheck-plain-"));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  writeFileSync(join(directory, "plain.ts"), "export const value = 7;\n");
+  const r = run("scan", directory);
   assert.equal(r.status, 3);
   assert.equal(r.stdout, "");
   assert.match(r.stderr, /scan unavailable/);
