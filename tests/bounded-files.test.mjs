@@ -1,0 +1,32 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtemp, mkdir, writeFile, symlink, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { readProjectTextFile } from "../dist/modules/bounded-files/index.js";
+
+test("read-only bounded file reader handles Unicode, symlinks and unsafe input", async t => {
+  const parent = await mkdtemp(join(tmpdir(), "fc-reader-"));
+  t.after(() => rm(parent, { recursive: true, force: true }));
+  const root = join(parent, "app"), outside = join(parent, "app-evil");
+  await mkdir(root); await mkdir(outside);
+  await writeFile(join(root, "你好.txt"), "hello 🌟\n");
+  await writeFile(join(root, "huge.txt"), "a".repeat(100));
+  await writeFile(join(root, "invalid"), Buffer.from([0xc3,0x28]));
+  await writeFile(join(root, "binary"), Buffer.from([0,1,2]));
+  await writeFile(join(outside, "secret"), "NEVER LEAK");
+  await symlink(join(root, "你好.txt"), join(root, "inner"));
+  await symlink(outside, join(root, "escape"));
+  const check = p => readProjectTextFile(root, p, {maxBytes:32});
+  assert.deepEqual(await check("你好.txt"), {ok:true, text:"hello 🌟\n", bytes:11, relativePath:"你好.txt"});
+  assert.equal((await check("inner")).ok, true);
+  assert.deepEqual(await check("huge.txt"), {ok:false, code:"too-large"});
+  assert.deepEqual(await check("invalid"), {ok:false, code:"invalid-utf8"});
+  assert.deepEqual(await check("binary"), {ok:false, code:"binary-file"});
+  assert.deepEqual(await check("escape/secret"), {ok:false, code:"outside-root"});
+  assert.deepEqual(await check("../app-evil/secret"), {ok:false, code:"outside-root"});
+  assert.deepEqual(await check("/etc/passwd"), {ok:false, code:"invalid-path"});
+  assert.deepEqual(await check("missing"), {ok:false, code:"not-found"});
+  assert.deepEqual(await check("."), {ok:false, code:"not-file"});
+  assert.deepEqual(await check("你好.txt"), await check("你好.txt"));
+});
